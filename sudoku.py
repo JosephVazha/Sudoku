@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib as mpl
+mpl.use("QtAgg")
+
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.patches import Rectangle
@@ -33,7 +35,7 @@ norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
 mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.Pastel1)
 
 # Give each Sudoku number a unique color
-cmap = mpl.cm.get_cmap("tab10", 10)
+cmap = mpl.colormaps.get_cmap("tab10").resampled (10)
 
 number_colors = {
     i: cmap(i) for i in range(1, 10)
