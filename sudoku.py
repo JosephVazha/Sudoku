@@ -6,7 +6,7 @@ import networkx as nx
 from matplotlib.patches import Rectangle
 
 
-#minimum remaining values solver
+#Solver helper fucns
 def getSlices(sudoku):
     slices = [slice(0,3), slice(3,6), slice(6,9)]
     s1,s2,s3 = slices
@@ -119,9 +119,7 @@ def visualize(puzzle, G, pos, mapping, node_colors):
     cell_highlight.set_visible(False)
     ax_grid.add_patch(cell_highlight)
 
-    # -------------------------
     # Draw constraint graph
-    # -------------------------
     graph_labels = {
         node: "?" if mapping[node] == 0 else str(mapping[node])
         for node in G.nodes()
@@ -151,9 +149,8 @@ def visualize(puzzle, G, pos, mapping, node_colors):
         zorder=10,
     )
 
-    # -------------------------
-    # Click interaction
-    # -------------------------
+    
+    # Highlight interaction - can eventually change to highlight node algorithm is working for cool cisual
     def on_click(event):
         if event.inaxes != ax_grid:
             return
