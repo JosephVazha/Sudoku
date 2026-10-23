@@ -1,10 +1,40 @@
 import numpy as np
 import matplotlib as mpl
 mpl.use("QtAgg")
-
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.patches import Rectangle
+
+
+#minimum remaining values solver
+def getSlices(sudoku):
+    slices = [slice(0,3), slice(3,6), slice(6,9)]
+    s1,s2,s3 = slices
+    allgrids=[(si,sj) for si in [s1,s2,s3] for sj in [s1,s2,s3]] # Makes 2d slices for grids
+    return allgrids
+
+def unique_rows(soduku):
+    for row in soduku:
+        if not np.array_equal(np.unique(row),np.array(range(1,10))) :
+            return False
+    return True
+
+def unique_columns(soduku):
+    for row in soduku.T: #transpose soduku to get columns
+        if not np.array_equal(np.unique(row),np.array(range(1,10))) :
+            return False
+    return True
+
+def unique_grids(soduku):
+    for grid in allgrids: 
+        if not np.array_equal(np.unique(soduku[grid]),np.array(range(1,10))) :
+            return False
+    return True
+
+def mrv(puzzle):
+    #for each cell check if the val = 0
+    #choose the cell with the fewest options
+
 
 puzzle = np.asarray(
     [
@@ -35,7 +65,7 @@ norm = mpl.colors.Normalize(vmin=low, vmax=high, clip=True)
 mapper = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.Pastel1)
 
 # Give each Sudoku number a unique color
-cmap = mpl.colormaps.get_cmap("tab10").resampled (10)
+cmap = mpl.cm.get_cmap("tab10", 10)
 
 number_colors = {
     i: cmap(i) for i in range(1, 10)
