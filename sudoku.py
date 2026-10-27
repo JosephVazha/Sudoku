@@ -4,6 +4,8 @@ mpl.use("QtAgg") #a weird arch thing?
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.patches import Rectangle
+from dsatur import dsatur
+from backtracking import backtracking
 
 
 ##############Solver helper fucns
@@ -281,4 +283,7 @@ puzzle = np.asarray([
 ])
 
 G, mapping, node_colors = puzzle_to_graph(puzzle)
-visualize(puzzle, G, mapping, node_colors, "circular")
+visualize(puzzle, G, mapping, node_colors, "s")
+
+puzzle = dsatur(puzzle)
+puzzle = backtracking(puzzle, True)

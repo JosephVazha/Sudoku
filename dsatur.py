@@ -1,8 +1,8 @@
 # Greedy DSATUR coloring on the Sudoku graph
 #
 # How to use it in the visual file:
-#     from dsatur import dsatur
-#     puzzle = dsatur(puzzle)
+  #  from dsatur import dsatur
+  #  puzzle = dsatur(puzzle)
 #
 # - 81 vertices (0..80), vertex = row * 9 + col
 # - Edge between two cells that share a row, column, or 3x3 box

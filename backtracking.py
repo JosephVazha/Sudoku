@@ -30,12 +30,34 @@ def find_empty(board):
             return v
     return None
 
+def find_mrv(board):
+    """Return the empty cell with the fewest legal digits."""
+    best_node = None
+    fewest_options = 10
 
-def solve(board):
+    for v in range(81):
+        if board[v] == 0:
+            options = legal_digits(board, v)
+
+            if len(options) < fewest_options:
+                best_node = v
+                fewest_options = len(options)
+
+            # No legal digits: this branch is impossible
+            if fewest_options == 0:
+                return best_node
+
+    return best_node
+    
+def solve(board, mrv):
     """Fill the board in place. Returns True if solved."""
     global tries, undos
 
-    node = find_empty(board)
+    if mrv:
+        node = find_mrv(board)
+    else:
+        node = find_empty(board)
+
     if node is None:
         return True                 # no empty cells left: solved!
 
@@ -43,7 +65,7 @@ def solve(board):
         tries += 1
         board[node] = digit         # try this digit
 
-        if solve(board):            # try to fill the rest of the board
+        if solve(board, mrv):            # try to fill the rest of the board
             return True
 
         board[node] = 0             # dead end later on: undo it
@@ -52,7 +74,7 @@ def solve(board):
     return False                    # nothing worked here: go back further
 
 
-def backtracking(puzzle):
+def backtracking(puzzle, mrv):
     """Takes a 9x9 puzzle (0 = empty) and returns a solved 9x9 copy."""
     global tries, undos
     tries, undos = 0, 0
@@ -60,9 +82,14 @@ def backtracking(puzzle):
     # Turn the 9x9 grid into a list of 81 digits: board[vertex] = digit
     board = [int(d) for d in np.asarray(puzzle).flatten()]
 
-    solved = solve(board)
-    print("Backtracking solved:", solved,
-          "| digits tried:", tries, "| times undone:", undos)
+    solved = solve(board, mrv)
+    if mrv:
+        print("MRV Backtracking solved:", solved,
+            "| digits tried:", tries, "| times undone:", undos)
+    else
+        print("Backtracking solved:", solved,
+            "| digits tried:", tries, "| times undone:", undos)   
 
     # Turn the list back into a 9x9 grid
+
     return np.array(board).reshape(9, 9)
