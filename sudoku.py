@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib as mpl
-mpl.use("QtAgg") #a weird arch thing
+mpl.use("QtAgg") #a weird arch thing?
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.patches import Rectangle
 
 
-#Solver helper fucns
+##############Solver helper fucns
 def getSlices(sudoku):
     slices = [slice(0,3), slice(3,6), slice(6,9)]
     s1,s2,s3 = slices
@@ -34,7 +34,14 @@ def unique_grids(soduku):
 #def mrv(puzzle):
     #for each cell check if the val = 0
     #choose the cell with the fewest options
+def puzzle_gen(n):
+    #generate sudoku puzzle by randomly ordering 9 vals everywhere
+    #remove one square and detemrine if its solvable
+    return puzzle
 
+def eval_diff(puzzle):
+    #evaluates a puzzles difficulty 
+    return diff
 def puzzle_to_graph(puzzle, n=3):
     G = nx.sudoku_graph(n)
 
@@ -56,6 +63,8 @@ def puzzle_to_graph(puzzle, n=3):
     ]
 
     return G, mapping, node_colors
+
+########################PLOTTTING STUFF###################################
 
 
 # n is the number of grids, standard size is 3
@@ -273,16 +282,3 @@ puzzle = np.asarray([
 
 G, mapping, node_colors = puzzle_to_graph(puzzle)
 visualize(puzzle, G, mapping, node_colors, "circular")
-
-# draw the graph
-# plt.figure(figsize=(12, 12))
-# nx.draw(
-#     G,
-#     labels=mapping,
-#     pos=pos,
-#     with_labels=True,
-#     node_color=[mapper.to_rgba(i) for i in mapping.values()],
-#     width=1,
-#     node_size=1000,
-# )
-# plt.show()
