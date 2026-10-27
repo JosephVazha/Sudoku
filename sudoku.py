@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib as mpl
-mpl.use("QtAgg")
+mpl.use("QtAgg") #a weird arch thing?
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.patches import Rectangle
 
 
-#Solver helper fucns
+##############Solver helper fucns
 def getSlices(sudoku):
     slices = [slice(0,3), slice(3,6), slice(6,9)]
     s1,s2,s3 = slices
@@ -34,20 +34,18 @@ def unique_grids(soduku):
 #def mrv(puzzle):
     #for each cell check if the val = 0
     #choose the cell with the fewest options
+def puzzle_gen(n):
+    #generate sudoku puzzle by randomly ordering 9 vals everywhere
+    #remove one square and detemrine if its solvable
+    return puzzle
 
+def eval_diff(puzzle):
+    #evaluates a puzzles difficulty 
+    return diff
 def puzzle_to_graph(puzzle, n=3):
     G = nx.sudoku_graph(n)
 
     mapping = dict(zip(G.nodes(), puzzle.flatten()))
-
-    pos = dict(zip(
-        list(G.nodes()),
-        [
-            (j, -i)
-            for i in range(n * n)
-            for j in range(n * n)
-        ]
-    ))
 
     # Give each Sudoku number a unique color
     cmap = mpl.colormaps.get_cmap("tab10").resampled(10)
@@ -64,15 +62,55 @@ def puzzle_to_graph(puzzle, n=3):
         for node in G.nodes()
     ]
 
-    return G, pos, mapping, node_colors
+    return G, mapping, node_colors
 
-def visualize(puzzle, G, pos, mapping, node_colors):
+########################PLOTTTING STUFF###################################
+
+
+# n is the number of grids, standard size is 3
+def separate_edges(n):
+    G = nx.sudoku_graph(n)
+    box_edges = []
+    row_edges = []
+    column_edges = []
+    boxes = []
+    for i in range(n):
+        for j in range(n):
+            box = [ #grabs the indexing for the box: 0,1,2; 9,10,11,;  .. .
+                (n) * i + j * (n * n * n) + (n * n) * k + l 
+                for k in range(n)
+                for l in range(n)
+            ]
+            boxes.append(box)
+
+    for i in range(n * n):
+        col = [i + (n * n) * j for j in range(n * n)] #generates col indices, normally 0, 9, 18, . . . 72
+
+        for a in range(len(col)):
+            for b in range(a + 1, len(col)):
+                column_edges.append((col[a], col[b])) 
+
+        for a in range(len(boxes[i])):
+            for b in range(a + 1, len(boxes[i])):
+                box_edges.append((boxes[i][a], boxes[i][b]))
+
+        row = list(G.nodes())[i * (n * n) : (i + 1) * (n * n)]
+
+        for a in range(len(row)):
+            for b in range(a + 1, len(row)):
+                row_edges.append((row[a], row[b]))
+
+    return row_edges, box_edges, column_edges
+
+
+def visualize(puzzle, G, mapping, node_colors, layout):
     fig, (ax_grid, ax_graph) = plt.subplots(
         1, 2, figsize=(14, 7)
     )
 
     size = puzzle.shape[0]
     box_size = int(np.sqrt(size))
+    row_edges, box_edges, column_edges = separate_edges(box_size)
 
     # -------------------------
     # Draw Sudoku grid
@@ -83,6 +121,18 @@ def visualize(puzzle, G, pos, mapping, node_colors):
     ax_grid.set_xticks([])
     ax_grid.set_yticks([])
     ax_grid.set_title("Sudoku — click a cell")
+
+    if layout == "circular":
+        pos = nx.circular_layout(G, scale=5)
+        ax_graph.set_xlim(-5.5, 5.5)
+        ax_graph.set_ylim(-5.5, 5.5)
+
+    else:
+        pos = {
+            node: (node % size, -(node // size))
+            for node in G.nodes()
+        }
+    
 
     for r in range(size):
         for c in range(size):
@@ -137,6 +187,25 @@ def visualize(puzzle, G, pos, mapping, node_colors):
         font_size=8,
         ax=ax_graph,
     )
+    nx.draw_networkx_edges(
+        G, 
+        pos=pos, 
+        edgelist=box_edges, 
+        edge_color="tab:green"
+        )
+
+    nx.draw_networkx_edges(
+        G, 
+        pos=pos, 
+        edgelist=row_edges, 
+        edge_color="tab:blue"
+    )
+    nx.draw_networkx_edges(
+        G, 
+        pos=pos, 
+        edgelist=column_edges, 
+        edge_color="tab:red"
+    )
 
     ax_graph.set_title("Sudoku Constraint Graph")
 
@@ -148,7 +217,14 @@ def visualize(puzzle, G, pos, mapping, node_colors):
         linewidths=3,
         zorder=10,
     )
-
+    neighbors_highlight = ax_graph.scatter(
+    [], [],
+    s=250,
+    facecolors="none",
+    edgecolors="orange",
+    linewidths=3,
+    zorder=10,
+)
     
     # Highlight interaction - can eventually change to highlight node algorithm is working for cool cisual
     def on_click(event):
@@ -173,6 +249,10 @@ def visualize(puzzle, G, pos, mapping, node_colors):
 
         # Highlight corresponding graph vertex
         graph_highlight.set_offsets([pos[selected_node]])
+
+        #Highlight neighborss
+        neighbors = list(G.neighbors(selected_node))
+        neighbors_highlight.set_offsets([pos[node] for node in neighbors])
 
         ax_grid.set_title(
             f"Sudoku — Cell ({r + 1}, {c + 1}): "
@@ -200,18 +280,5 @@ puzzle = np.asarray([
     [0, 3, 4, 0, 9, 0, 7, 1, 0],
 ])
 
-G, pos, mapping, node_colors = puzzle_to_graph(puzzle)
-visualize(puzzle, G, pos, mapping, node_colors)
-
-# draw the graph
-# plt.figure(figsize=(12, 12))
-# nx.draw(
-#     G,
-#     labels=mapping,
-#     pos=pos,
-#     with_labels=True,
-#     node_color=[mapper.to_rgba(i) for i in mapping.values()],
-#     width=1,
-#     node_size=1000,
-# )
-# plt.show()
+G, mapping, node_colors = puzzle_to_graph(puzzle)
+visualize(puzzle, G, mapping, node_colors, "circular")
