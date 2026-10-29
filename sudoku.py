@@ -1,49 +1,50 @@
 import numpy as np
 import matplotlib as mpl
-mpl.use("QtAgg") #a weird arch thing?
+mpl.use("TkAgg") #a weird arch thing?
 import matplotlib.pyplot as plt
 import networkx as nx
 from matplotlib.patches import Rectangle
 from dsatur import dsatur
 from backtracking import backtracking
+from puzzle_gen import generate_sudoku
 
 
-##############Solver helper fucns
-def getSlices(sudoku):
-    slices = [slice(0,3), slice(3,6), slice(6,9)]
-    s1,s2,s3 = slices
-    allgrids=[(si,sj) for si in [s1,s2,s3] for sj in [s1,s2,s3]] # Makes 2d slices for grids
-    return allgrids
+# ##############Solver helper fucns
+# def getSlices(sudoku):
+#     slices = [slice(0,3), slice(3,6), slice(6,9)]
+#     s1,s2,s3 = slices
+#     allgrids=[(si,sj) for si in [s1,s2,s3] for sj in [s1,s2,s3]] # Makes 2d slices for grids
+#     return allgrids
 
-def unique_rows(soduku):
-    for row in soduku:
-        if not np.array_equal(np.unique(row),np.array(range(1,10))) :
-            return False
-    return True
+# def unique_rows(soduku):
+#     for row in soduku:
+#         if not np.array_equal(np.unique(row),np.array(range(1,10))) :
+#             return False
+#     return True
 
-def unique_columns(soduku):
-    for row in soduku.T: #transpose soduku to get columns
-        if not np.array_equal(np.unique(row),np.array(range(1,10))) :
-            return False
-    return True
+# def unique_columns(soduku):
+#     for row in soduku.T: #transpose soduku to get columns
+#         if not np.array_equal(np.unique(row),np.array(range(1,10))) :
+#             return False
+#     return True
 
-def unique_grids(soduku):
-    for grid in allgrids: 
-        if not np.array_equal(np.unique(soduku[grid]),np.array(range(1,10))) :
-            return False
-    return True
+# def unique_grids(soduku):
+#     for grid in allgrids: 
+#         if not np.array_equal(np.unique(soduku[grid]),np.array(range(1,10))) :
+#             return False
+#     return True
 
-#def mrv(puzzle):
-    #for each cell check if the val = 0
-    #choose the cell with the fewest options
-def puzzle_gen(n):
-    #generate sudoku puzzle by randomly ordering 9 vals everywhere
-    #remove one square and detemrine if its solvable
-    return puzzle
+# #def mrv(puzzle):
+#     #for each cell check if the val = 0
+#     #choose the cell with the fewest options
+# def puzzle_gen(n):
+#     #generate sudoku puzzle by randomly ordering 9 vals everywhere
+#     #remove one square and detemrine if its solvable
+#     return puzzle
 
-def eval_diff(puzzle):
-    #evaluates a puzzles difficulty 
-    return diff
+# def eval_diff(puzzle):
+#     #evaluates a puzzles difficulty 
+#     return diff
 def puzzle_to_graph(puzzle, n=3):
     G = nx.sudoku_graph(n)
 
@@ -270,17 +271,20 @@ def visualize(puzzle, G, mapping, node_colors, layout):
     plt.show()
 
 
-puzzle = np.asarray([
-    [0, 4, 3, 0, 8, 0, 2, 5, 0],
-    [6, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 9, 4],
-    [9, 0, 0, 0, 0, 4, 0, 7, 0],
-    [0, 0, 0, 6, 0, 8, 0, 0, 0],
-    [0, 1, 0, 2, 0, 0, 0, 0, 3],
-    [8, 2, 0, 5, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 5],
-    [0, 3, 4, 0, 9, 0, 7, 1, 0],
-])
+# /*puzzle = np.asarray([
+#     [0, 4, 3, 0, 8, 0, 2, 5, 0],
+#     [6, 0, 0, 0, 0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0, 1, 0, 9, 4],
+#     [9, 0, 0, 0, 0, 4, 0, 7, 0],
+#     [0, 0, 0, 6, 0, 8, 0, 0, 0],
+#     [0, 1, 0, 2, 0, 0, 0, 0, 3],
+#     [8, 2, 0, 5, 0, 0, 0, 0, 0],
+#     [0, 0, 0, 0, 0, 0, 0, 0, 5],
+#     [0, 3, 4, 0, 9, 0, 7, 1, 0],
+# ]) */
+
+
+puzzle = generate_sudoku(clues=35)
 
 G, mapping, node_colors = puzzle_to_graph(puzzle)
 visualize(puzzle, G, mapping, node_colors, "s")

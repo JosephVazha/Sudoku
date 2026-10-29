@@ -86,7 +86,7 @@ def backtracking(puzzle, mrv):
     if mrv:
         print("MRV Backtracking solved:", solved,
             "| digits tried:", tries, "| times undone:", undos)
-    else
+    else:
         print("Backtracking solved:", solved,
             "| digits tried:", tries, "| times undone:", undos)   
 
